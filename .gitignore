@@ -1,16 +1,10 @@
-#deep learning models
-*.h5
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-
-# C extensions
-*.so
+*$py.class
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -22,19 +16,10 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
@@ -44,55 +29,42 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
 
-# Translations
-*.mo
-*.pot
+# DVC
+/data
+/models
+*.h5
+*.pkl
+/logs
 
-# Django stuff:
-*.log
+# MLflow
+/mlflow/mlflow.db
+/mlflow/artifacts
 
-# Sphinx documentation
-docs/_build/
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# PyBuilder
-target/
-
-# DotEnv configuration
+# Environments
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Database
-*.db
-*.rdb
-
-# Pycharm
-.idea
-
-# VS Code
+# IDE
+.idea/
 .vscode/
-
-# Spyder
-.spyproject/
-
-# Jupyter NB Checkpoints
-.ipynb_checkpoints/
-
-# exclude data from source control by default
-/data/
-
-# Mac OS-specific storage files
-.DS_Store
-
-# vim
 *.swp
 *.swo
 
-# Mypy cache
-.mypy_cache/
+# OS specific
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Log files
-/logs/
-
-# Artifacts
-# /models/
+# Docker
+.docker/

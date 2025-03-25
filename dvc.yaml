@@ -1,0 +1,46 @@
+stages:
+  import_data:
+    cmd: python src/data/import_raw_data.py
+    deps:
+      - src/data/import_raw_data.py
+    outs:
+      - data/raw
+
+  preprocess:
+    cmd: python src/data/make_dataset.py data/raw data/preprocessed
+    deps:
+      - src/data/make_dataset.py
+      - data/raw
+    outs:
+      - data/preprocessed
+
+  train:
+    cmd: python src/main.py
+    deps:
+      - src/main.py
+      - src/features/build_features.py
+      - src/models/train_model.py
+      - data/preprocessed
+    params:
+      - epochs
+      - batch_size
+      - learning_rate
+    outs:
+      - models/best_lstm_model.h5
+      - models/best_vgg16_model.h5
+      - models/concatenate.h5
+    metrics:
+      - models/metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - models/best_lstm_model.h5
+      - models/best_vgg16_model.h5
+      - models/concatenate.h5
+      - data/preprocessed
+    metrics:
+      - models/evaluation.json:
+          cache: false
