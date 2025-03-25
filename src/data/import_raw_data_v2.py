@@ -14,8 +14,6 @@ dataset = "parth70142/rakuten"
 # Download latest version
 path = kagglehub.dataset_download(dataset, force_download=True)
 print("Path to dataset files:", path)
-#final_path = os.path.join(path, " ")
-#print("Path to dataset files:", final_path)
 
 if os.path.exists(raw_data_relative_path) is True:    
     shutil.rmtree(raw_data_relative_path)

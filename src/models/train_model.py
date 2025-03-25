@@ -75,7 +75,7 @@ class TextLSTMModel:
         self.model.fit(
             [train_padded_sequences],
             tf.keras.utils.to_categorical(y_train, num_classes=27),
-            epochs=1,
+            epochs=10,
             batch_size=32,
             validation_data=(
                 [val_padded_sequences],
@@ -173,15 +173,11 @@ class concatenate:
         img_array = preprocess_input(img_array)
         return img_array
 
-    def predict(
-        self, X_train, y_train, new_samples_per_class=50, max_sequence_length=10
-    ):
+    def predict(self, X_train, y_train, new_samples_per_class=50, max_sequence_length=10):
         num_classes = 27
 
         new_X_train = pd.DataFrame(columns=X_train.columns)
-        new_y_train = pd.DataFrame(
-            columns=[0]
-        )  # Créez la structure pour les étiquettes
+        new_y_train = pd.DataFrame(columns=['prdtypecode'])  # Créez la structure pour les étiquettes
 
         # Boucle à travers chaque classe
         for class_label in range(num_classes):

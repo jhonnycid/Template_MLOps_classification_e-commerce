@@ -9,6 +9,7 @@ import pickle
 import math
 
 
+
 class DataImporter:
     def __init__(self, filepath="data/preprocessed"):
         self.filepath = filepath
@@ -80,7 +81,7 @@ class DataImporter:
 
 
 class ImagePreprocessor:
-    def __init__(self, filepath="data/preprocessed/image_train"):
+    def __init__(self, filepath="data/preprocessed/images/images/image_train"):
         self.filepath = filepath
 
     def preprocess_images_in_df(self, df):
@@ -98,6 +99,7 @@ class TextPreprocessor:
         nltk.download("punkt")
         nltk.download("stopwords")
         nltk.download("wordnet")
+        nltk.download('punkt_tab')
         self.lemmatizer = WordNetLemmatizer()
         self.stop_words = set(
             stopwords.words("french")
