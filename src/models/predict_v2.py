@@ -100,8 +100,7 @@ def main():
     args = parser.parse_args()
     filepath= args.dataset_path
     imagepath = args.images_path
-    print(filepath)
-    print(imagepath)
+    
     # Charger les configurations et modèles
     with open("models/tokenizer_config.json", "r", encoding="utf-8") as json_file:
         tokenizer_config = json_file.read()
