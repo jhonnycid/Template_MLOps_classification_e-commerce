@@ -26,9 +26,7 @@ stages:
       - batch_size
       - learning_rate
     outs:
-      - models/best_lstm_model.h5
-      - models/best_vgg16_model.h5
-      - models/concatenate.h5
+      - models/      
     metrics:
       - models/metrics.json:
           cache: false

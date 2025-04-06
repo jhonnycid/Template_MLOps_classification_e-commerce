@@ -110,9 +110,8 @@ def main():
     
     # Charger les configurations et modèles
     
-    # 1. Charger le préprocesseur de texte
-    with open("models/text_preprocessor.pkl", "rb") as f:
-        text_preprocessor = pickle.load(f)
+    # 1. Charger le préprocesseur de texte en utilisant la méthode de classe load
+    text_preprocessor = TextPreprocessor.load("models/text_preprocessor.pkl")
     
     # 2. Charger les informations du modèle
     with open("models/model_info.json", "r") as f:
@@ -120,7 +119,7 @@ def main():
     
     # 3. Créer et charger le modèle LSTM
     lstm_model = LSTMModel(
-        vocab_size=text_preprocessor["n_words"],
+        vocab_size=text_preprocessor.n_words,
         embedding_dim=model_info["embedding_dim"],
         hidden_dim=model_info["lstm_units"],
         output_dim=model_info["num_classes"]
@@ -141,7 +140,7 @@ def main():
     
     # Créer l'instance Predict et exécuter la prédiction
     predictor = Predict(
-        text_preprocessor=TextPreprocessor(**text_preprocessor),
+        text_preprocessor=text_preprocessor,
         lstm_model=lstm_model,
         vgg16_model=vgg16_model,
         best_weights=best_weights,

@@ -1,0 +1,1 @@
+{"num_classes": 27, "max_sequence_length": 10, "max_words": 10000, "embedding_dim": 128, "lstm_units": 128, "image_size": 224}

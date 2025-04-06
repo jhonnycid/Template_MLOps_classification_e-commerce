@@ -1,0 +1,34 @@
+# 🔄 Fichiers temporaires Python
+__pycache__/
+*.py[cod]
+
+# 📓 Jupyter notebooks (utiles localement uniquement)
+notebooks/
+.ipynb_checkpoints/
+
+# 💾 Données locales (gérées par DVC ou déjà versionnées ailleurs)
+data/raw/
+data/preprocessed/
+logs/
+
+# 📦 Artefacts MLflow et modèles
+mlflow/
+models/
+*.db
+
+# ⚙️ Environnements virtuels locaux
+.venv/
+venv-mlops/
+env/
+*.env
+
+# 🧬 Git et DVC
+.git/
+.dvc/
+.dvcignore
+
+# 🛠️ Config éditeur (VS Code, etc.)
+.vscode/
+
+# 🐳 Autres fichiers Docker non nécessaires à la build standard
+Dockerfile.*

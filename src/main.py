@@ -20,7 +20,8 @@ with open("params.yaml", "r") as f:
     params = yaml.safe_load(f)
 
 # Configuration de MLflow
-mlflow.set_tracking_uri("http://localhost:5001")
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5001"))
+# mlflow.set_tracking_uri("http://mlflow:5000")
 mlflow.set_experiment("rakuten-classification")
 
 # Définir le device
@@ -188,6 +189,9 @@ with mlflow.start_run() as run:
     with open("models/mapper.json", "w") as f:
         json.dump(mapper_json, f)
     
+    mlflow.log_artifact("models/best_weights.json")
+    mlflow.log_artifact("models/metrics.json")
+
     print(f"Test accuracy: {accuracy:.4f}")
     print(f"Best weights: LSTM={best_weights[0]:.4f}, VGG16={best_weights[1]:.4f}")
     print("Modèles et métriques sauvegardés")

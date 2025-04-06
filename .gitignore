@@ -32,7 +32,6 @@ coverage.xml
 
 # DVC
 /data
-/models
 *.h5
 *.pkl
 /logs

@@ -1,0 +1,4 @@
+pandas
+evidently
+beautifulsoup4
+lxml

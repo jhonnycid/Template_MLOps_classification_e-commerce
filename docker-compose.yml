@@ -1,22 +1,6 @@
 version: '3'
 
 services:
-  model-api:
-    build: .
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      - MODEL_PATH=/app/models
-      - DATA_PATH=/app/data
-    restart: unless-stopped
-    networks:
-      - ml-network
-
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
     ports:
@@ -28,6 +12,71 @@ services:
     command: mlflow server --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0
     networks:
       - ml-network
+
+  trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    command: python src/main.py
+    networks:
+      - ml-network
+    depends_on:
+      - mlflow
+
+  predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    command: python src/predict.py
+    networks:
+      - ml-network
+    depends_on:
+      - mlflow
+
+  api-fast:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PATH=/app/models
+      - DATA_PATH=/app/data
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    networks:
+      - ml-network
+    restart: unless-stopped
+
+  monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    volumes:
+      - ./data:/app/data
+      - ./monitoring:/app/monitoring
+    networks:
+      - ml-network
+    depends_on:
+      - api-fast
 
 networks:
   ml-network:

@@ -1,0 +1,33 @@
+schema: '2.0'
+stages:
+  import_data:
+    cmd: python src/data/import_raw_data.py
+    deps:
+    - path: src/data/import_raw_data.py
+      hash: md5
+      md5: e341b268ba285c1a84cb76067b347145
+      size: 6100
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
+      size: 2687848905
+      nfiles: 98731
+  preprocess:
+    cmd: python src/data/make_dataset.py data/raw data/preprocessed
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
+      size: 2687848905
+      nfiles: 98731
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 97cf7b9ce0afec5ece6d88d5a2f95137
+      size: 1167
+    outs:
+    - path: data/preprocessed
+      hash: md5
+      md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
+      size: 2687848905
+      nfiles: 98731
