@@ -1,7 +1,12 @@
-Project Name
+Classification E-commerce - Rakuten
 ==============================
 
 This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". It's not perfect so feel free to make some modifications on it.
+
+Architecture
+
+![image](https://github.com/user-attachments/assets/5ecebf77-4299-428c-a0fe-8094c3e9947c)
+
 
 Project Organization
 ------------
