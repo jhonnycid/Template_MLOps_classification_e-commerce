@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Evidently
+monitoring/reports/
+
 # Distribution / packaging
 .Python
 build/
@@ -32,6 +35,7 @@ coverage.xml
 
 # DVC
 /data
+/models/
 *.h5
 *.pkl
 /logs

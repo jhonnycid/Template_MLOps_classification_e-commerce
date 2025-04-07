@@ -26,7 +26,10 @@ stages:
       - batch_size
       - learning_rate
     outs:
-      - models/      
+      - models/best_lstm_model.pth
+      - models/best_vgg16_model.pth
+      - models/best_weights.json
+      - models/text_preprocessor.pkl
     metrics:
       - models/metrics.json:
           cache: false
