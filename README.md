@@ -119,6 +119,7 @@ docker compose up
 ```
 - Connection au serveur: 
 http://localhost:8080/home
+
 usr: airflow
 pss: airflow
 
@@ -128,6 +129,7 @@ pss: airflow
   ![image](https://github.com/user-attachments/assets/7e8800dc-cc82-4344-a5b4-d7afe0459d0f)
 
 Les données et modèles seront sauvagardées sur les repertoires
+
 'data/processed' : Données traitées
 'data/models: Modeles et weights
 
