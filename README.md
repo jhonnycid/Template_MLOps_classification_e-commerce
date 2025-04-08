@@ -1,84 +1,211 @@
-Project Name
-==============================
+# Rakuten MLOps Project
 
-This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". It's not perfect so feel free to make some modifications on it.
-
-Project Organization
-------------
-
-    ├── LICENSE
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources -> the external data you want to make a prediction on
-    │   ├── preprocessed      <- The final, canonical data sets for modeling.
-    |   |  ├── image_train <- Where you put the images of the train set
-    |   |  ├── image_test <- Where you put the images of the predict set
-    |   |  ├── X_train_update.csv    <- The csv file with te columns designation, description, productid, imageid like in X_train_update.csv
-    |   |  ├── X_test_update.csv    <- The csv file with te columns designation, description, productid, imageid like in X_train_update.csv
-    │   └── raw            <- The original, immutable data dump.
-    |   |  ├── image_train <- Where you put the images of the train set
-    |   |  ├── image_test <- Where you put the images of the predict set
-    │
-    ├── logs               <- Logs from training and predicting
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   ├── main.py        <- Scripts to train models 
-    │   ├── predict.py     <- Scripts to use trained models to make prediction on the files put in ../data/preprocessed
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   ├── check_structure.py    
-    │   │   ├── import_raw_data.py 
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models                
-    │   │   └── train_model.py
-    │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
+Ce projet est une base complète pour mettre en place un pipeline MLOps moderne appliqué à une tâche de classification de produits e-commerce. Il inclut l'entraînement de modèles, la prédiction, la surveillance des dérives de données, l'orchestration et l'exposition via une API.
 
 --------
 
-Once you have downloaded the github repo, open the anaconda powershell on the root of the project and follow those instructions :
+## Architecture
 
-> `conda create -n "Rakuten-project"`    <- It will create your conda environement
+![image](https://github.com/user-attachments/assets/5ecebf77-4299-428c-a0fe-8094c3e9947c)
 
-> `conda activate Rakuten-project`       <- It will activate your environment
 
-> `conda install pip`                    <- May be optionnal
+## 🔧 Installation rapide (en local)
 
-> `pip install -r requirements.txt`      <- It will install the required packages
+```bash
+conda create -n Rakuten-project python=3.9
+conda activate Rakuten-project
+pip install -r requirements.txt
+```
 
-> `python src/data/import_raw_data.py`   <- It will import the tabular data on data/raw/
+---
 
-> Upload the image data folder set directly on local from https://challengedata.ens.fr/participants/challenges/35/, you should save the folders image_train and image_test respecting the following structure
+## 🐳 Lancer toute la stack avec Docker
 
-    ├── data
-    │   └── raw           
-    |   |  ├── image_train 
-    |   |  ├── image_test 
+```bash
+docker-compose up --build
+```
 
-> `python src/data/make_dataset.py data/raw data/preprocessed`      <- It will copy the raw dataset and paste it on data/preprocessed/
+ou pour lancer un composant spécifique :
 
-> `python src/main.py`                   <- It will train the models on the dataset and save them in models. By default, the number of epochs = 1
+```bash
+docker-compose run --rm monitor
+docker-compose run --rm api-fast
+```
 
-> `python src/predict.py`                <- It will use the trained models to make a prediction (of the prdtypecode) on the desired data, by default, it will predict on the train. You can pass the path to data and images as arguments if you want to change it
->
-    Exemple : python src/predict_1.py --dataset_path "data/preprocessed/X_test_update.csv" --images_path "data/preprocessed/image_test"
-                                        
-                                         The predictions are saved in data/preprocessed as 'predictions.json'
+---
 
-> You can download the trained models loaded here : https://drive.google.com/drive/folders/1fjWd-NKTE-RZxYOOElrkTdOw2fGftf5M?usp=drive_link and insert them in the models folder
-> 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
-python make_dataset.py "../../data/raw" "../../data/preprocessed"
+## ⚙️ Commandes Makefile disponibles
+
+```bash
+make train             # Entraînement depuis Dockerfile.dev
+make predict           # Lancement de la prédiction (via conteneur api-fast)
+make monitor           # Génère les rapports de dérive
+make api               # Lance l'API en standalone
+make dashboard         # Affiche le dashboard CLI de monitoring
+make full-run          # Entraînement + prédiction + monitoring + dashboard
+make full-run-api      # full-run + lancement de l'API
+make no-train-run      # Prédiction + monitoring + dashboard (sans entraînement)
+make up / make down    # Démarrer / arrêter tous les conteneurs
+make lint / format     # Qualité de code
+```
+
+---
+
+## 🧱 Structure du projet
+
+```
+├── airflow/
+│   ├── dags/                  <- Script dag
+│   ├── logs/                  <- Logs des éxecutions du workflow
+│   ├── src/                   <- Répertoire du dockerFile utilisé par les tasks (DockerOperator) et des scripts ETL/training
+|
+├── data/
+│   ├── raw/                  <- Données brutes (images + fichiers .csv)
+│   ├── processed/         <- Données transformées pour les modèles
+│   ├── current.csv / reference.csv <- Pour le monitoring de dérive
+│
+├── models/                   <- Modèles entraînés (Pickle, JSON, etc.)
+├── logs/                     <- Logs d'entraînement et logs API
+├── notebooks/                <- Analyses exploratoires et prototypes
+├── monitoring/               <- Evidently : dérive des données
+│   ├── monitor.py
+│   └── reports/
+│
+├── src/
+│   ├── main.py               <- Entraînement
+│   ├── predict.py            <- Prédiction
+│   ├── data/                 <- Scripts d'import/preprocessing
+│   ├── features/             <- Feature engineering
+│   ├── models/               <- Architecture LSTM + VGG16
+│   └── config/               <- Paramètres
+│
+├── tests/                    <- Tests unitaires
+├── Dockerfile*               <- Dockerisation des services
+├── docker-compose.yml        <- Orchestration multi-container
+├── requirements.txt          <- Dépendances Python
+├── Makefile                  <- Automatisation des tâches
+└── README.md                 <- Tu y es !
+```
+---
+
+## 🚀 Worflow ETL et Entrainement des modèles (Airflow)
+
+On utilise la version docker de Airflow. Pour mettre en place l'application :
+
+```bash
+cd airflow/
+docker compose up
+```
+- Connection au serveur: 
+http://localhost:8080/home
+
+usr: airflow
+pss: airflow
+
+- Executer dag: Rakuten_ETL_training_dag
+  ![image](https://github.com/user-attachments/assets/b567639f-934b-4412-a72c-4c09c3f0d39f)
+
+  ![image](https://github.com/user-attachments/assets/7e8800dc-cc82-4344-a5b4-d7afe0459d0f)
+
+Les données et modèles seront sauvagardées sur les repertoires
+
+'data/processed' : Données traitées
+'data/models: Modeles et weights
+
+---
+
+## 📊 Architecture du projet (Mermaid)
+
+```mermaid
+graph TD
+  A[User Input] -->|Text + Image| API[FastAPI]
+  API -->|Prétraitement| Preproc[Text & Image Preprocessor]
+  Preproc -->|Vecteurs| Models[LSTM + VGG16]
+  Models -->|Fusion| Combiner[Poids optimaux]
+  Combiner -->|Résultat| Pred[Prediction JSON]
+  Pred -->|MLflow Log| MLflow[(Tracking Server)]
+
+  subgraph Docker Containers
+    API
+    Models
+    MLflow
+    Monitor[Evidently]
+  end
+```
+---
+
+## 🌐 API d’inférence (FastAPI)
+
+L’API permet de soumettre des données (JSON) pour obtenir des prédictions :
+
+```bash
+docker-compose run --rm api-fast
+```
+
+- Endpoint : `POST /predict`
+- Format attendu :
+```json
+{
+  "description": "Chaussures en cuir pour homme",
+  "image": "<base64 ou chemin local>"
+}
+```
+
+- Réponse :
+```json
+{
+  "predicted_category": "263",
+  "category_id": 263,
+  "confidence": 0.87
+}
+```
+
+Accessible sur [http://localhost:8000](http://localhost:8000)
+
+---
+
+## 📊 Monitoring avec Evidently
+
+Deux rapports sont générés automatiquement :
+
+- `monitoring/reports/drift_report.html`
+- `monitoring/reports/drift_report.json`
+
+Ces fichiers comparent `reference.csv` (ancien jeu) et `current.csv` (nouveau jeu) pour détecter toute dérive de données.
+
+---
+
+## 📈 Suivi des expériences avec MLflow
+
+Le serveur MLflow est déjà intégré via Docker et enregistre automatiquement :
+
+- Les hyperparamètres
+- Les performances (accuracy, loss, etc.)
+- Les modèles (`.pth`)
+- Les métriques de l’API (via endpoint `/predict`)
+
+Accessible sur : [http://localhost:5001](http://localhost:5001)
+
+---
+
+## 🧪 Tests
+
+Lancer les tests unitaires :
+
+```bash
+make test
+```
+
+---
+
+## 📚 Ressources utiles
+
+- [Evidently](https://github.com/evidentlyai/evidently)
+- [Flyte](https://docs.flyte.org/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [MLflow](https://mlflow.org/)
+- [cookiecutter-data-science](https://drivendata.github.io/cookiecutter-data-science/)
+
+---
+
+<p><small>Projet inspiré du template <a href="https://drivendata.github.io/cookiecutter-data-science/" target="_blank">cookiecutter data science</a></small></p>
