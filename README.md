@@ -54,9 +54,14 @@ make lint / format     # Qualité de code
 ## 🧱 Structure du projet
 
 ```
+├── airflow/
+│   ├── dags/                  <- Script dag
+│   ├── logs/                  <- Logs des éxecutions du workflow
+│   ├── src/                   <- Répertoire du dockerFile utilisé par les tasks (DockerOperator) et des scripts ETL/training
+|
 ├── data/
 │   ├── raw/                  <- Données brutes (images + fichiers .csv)
-│   ├── preprocessed/         <- Données transformées pour les modèles
+│   ├── processed/         <- Données transformées pour les modèles
 │   ├── current.csv / reference.csv <- Pour le monitoring de dérive
 │
 ├── models/                   <- Modèles entraînés (Pickle, JSON, etc.)
@@ -81,7 +86,6 @@ make lint / format     # Qualité de code
 ├── Makefile                  <- Automatisation des tâches
 └── README.md                 <- Tu y es !
 ```
-
 ---
 
 ## 📊 Architecture du projet (Mermaid)
@@ -105,26 +109,27 @@ graph TD
 
 ---
 
-## 🚀 Étapes principales (manuelles)
+## 🚀 Worflow ETL (Airflow)
+
+On utilise la version docker de Airflow. Pour mettre en place l'application :
 
 ```bash
-# 1. Import des données
-python src/data/import_raw_data.py
-
-# 2. Préparation du dataset
-python src/data/make_dataset.py data/raw data/preprocessed
-
-# 3. Entraînement
-python src/main.py
-
-# 4. Prédiction
-python src/predict.py --dataset_path "data/preprocessed/X_test_update.csv" --images_path "data/preprocessed/image_test"
-
-# 5. Monitoring avec Evidently
-docker-compose run --rm monitor
+cd airflow/
+docker compose up
 ```
+- Connection au serveur: 
+http://localhost:8080/home
+usr: airflow
+pss: airflow
 
-Les prédictions sont sauvegardées dans `data/preprocessed/predictions.json`.
+- Executer dag: Rakuten_ETL_training_dag
+  ![image](https://github.com/user-attachments/assets/b567639f-934b-4412-a72c-4c09c3f0d39f)
+
+  ![image](https://github.com/user-attachments/assets/7e8800dc-cc82-4344-a5b4-d7afe0459d0f)
+
+Les données et modèles seront sauvagardées sur les repertoires
+'data/processed' : Données traitées
+'data/models: Modeles et weights
 
 ---
 
