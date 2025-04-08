@@ -175,19 +175,6 @@ Ces fichiers comparent `reference.csv` (ancien jeu) et `current.csv` (nouveau je
 
 ---
 
-## 🛰️ Orchestration (Flyte)
-
-Flyte est utilisé pour orchestrer les étapes du pipeline ML :
-
-```bash
-flytectl demo start          # Lancement du cluster Flyte en local
-pyflyte run workflows/pipeline.py my_workflow
-```
-
-> Flyte offre une exécution distribuée, un tracking natif et une meilleure résilience que Airflow pour les projets MLOps.
-
----
-
 ## 📈 Suivi des expériences avec MLflow
 
 Le serveur MLflow est déjà intégré via Docker et enregistre automatiquement :
