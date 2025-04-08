@@ -88,27 +88,6 @@ make lint / format     # Qualité de code
 ```
 ---
 
-## 📊 Architecture du projet (Mermaid)
-
-```mermaid
-graph TD
-  A[User Input] -->|Text + Image| API[FastAPI]
-  API -->|Prétraitement| Preproc[Text & Image Preprocessor]
-  Preproc -->|Vecteurs| Models[LSTM + VGG16]
-  Models -->|Fusion| Combiner[Poids optimaux]
-  Combiner -->|Résultat| Pred[Prediction JSON]
-  Pred -->|MLflow Log| MLflow[(Tracking Server)]
-
-  subgraph Docker Containers
-    API
-    Models
-    MLflow
-    Monitor[Evidently]
-  end
-```
-
----
-
 ## 🚀 Worflow ETL et Entrainement des modèles (Airflow)
 
 On utilise la version docker de Airflow. Pour mettre en place l'application :
@@ -133,6 +112,26 @@ Les données et modèles seront sauvagardées sur les repertoires
 'data/processed' : Données traitées
 'data/models: Modeles et weights
 
+---
+
+## 📊 Architecture du projet (Mermaid)
+
+```mermaid
+graph TD
+  A[User Input] -->|Text + Image| API[FastAPI]
+  API -->|Prétraitement| Preproc[Text & Image Preprocessor]
+  Preproc -->|Vecteurs| Models[LSTM + VGG16]
+  Models -->|Fusion| Combiner[Poids optimaux]
+  Combiner -->|Résultat| Pred[Prediction JSON]
+  Pred -->|MLflow Log| MLflow[(Tracking Server)]
+
+  subgraph Docker Containers
+    API
+    Models
+    MLflow
+    Monitor[Evidently]
+  end
+```
 ---
 
 ## 🌐 API d’inférence (FastAPI)
