@@ -109,7 +109,7 @@ graph TD
 
 ---
 
-## 🚀 Worflow ETL (Airflow)
+## 🚀 Worflow ETL et Entrainement des modèles (Airflow)
 
 On utilise la version docker de Airflow. Pour mettre en place l'application :
 
