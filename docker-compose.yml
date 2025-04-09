@@ -1,0 +1,168 @@
+version: '3'
+
+services:
+  # MLflow
+  mlflow-server:
+    build:
+      context: ./mlflow-custom
+    container_name: mlflow-server
+    ports:
+      - "5001:5000"
+    command: mlflow server --backend-store-uri postgresql://mlflow:mlflow@mlflow-db:5432/mlflow --default-artifact-root s3://mlflow/ --host 0.0.0.0
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - MLFLOW_S3_ENDPOINT_URL=http://mlflow-minio:9000
+    depends_on:
+      - mlflow-db
+      - mlflow-minio
+    networks:
+      - mlops-network
+
+  mlflow-db:
+    image: postgres:13
+    container_name: mlflow-db
+    restart: always
+    environment:
+      - POSTGRES_USER=mlflow
+      - POSTGRES_PASSWORD=mlflow
+      - POSTGRES_DB=mlflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - mlflow-db-data:/var/lib/postgresql/data
+    networks:
+      - mlops-network
+
+  mlflow-minio:
+    image: minio/minio
+    container_name: mlflow-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio123
+    command: server /data --console-address ":9001"
+    volumes:
+      - mlflow-minio-data:/data
+    networks:
+      - mlops-network
+
+  mlflow-mc:
+    image: minio/mc
+    container_name: mlflow-mc
+    depends_on:
+      - mlflow-minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc config host add minio http://mlflow-minio:9000 minio minio123;
+      /usr/bin/mc ls minio/mlflow || /usr/bin/mc mb minio/mlflow;
+      exit 0;
+      "
+    networks:
+      - mlops-network
+
+  # API FastAPI
+  api:
+    build:
+      context: ./api
+    container_name: rakuten-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+    depends_on:
+      - mlflow-server
+    networks:
+      - mlops-network
+
+  # Monitoring stack
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      - mlops-network
+
+  grafana:
+    image: grafana/grafana:9.5.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: always
+    depends_on:
+      - prometheus
+    networks:
+      - mlops-network
+
+  evidently:
+    build:
+      context: ./monitoring/evidently
+    container_name: evidently
+    ports:
+      - "8050:8050"
+    restart: always
+    networks:
+      - mlops-network
+
+  node-exporter:
+    image: prom/node-exporter:v1.6.0
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: always
+    networks:
+      - mlops-network
+
+  # Interface Utilisateur Streamlit
+  ui:
+    build:
+      context: ./ui
+    container_name: rakuten-ui
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    networks:
+      - mlops-network
+      
+  # Service d'entraînement des modèles
+  training:
+    build:
+      context: ./training
+    container_name: rakuten-training
+    volumes:
+      - ./:/app
+      - "/Users/danhang/Documents/PROJET TRANSITION PRO/Formation IA/DataScientest/Projet Rakuten/archive/images/:/app/data/external"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - MLFLOW_S3_ENDPOINT_URL=http://mlflow-minio:9000
+    depends_on:
+      - mlflow-server
+    networks:
+      - mlops-network
+    # Par défaut, le conteneur attend sans rien faire
+    command: tail -f /dev/null
+
+networks:
+  mlops-network:
+
+volumes:
+  mlflow-db-data:
+  mlflow-minio-data:
+  grafana-storage:

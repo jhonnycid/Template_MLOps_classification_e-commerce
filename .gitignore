@@ -8,6 +8,8 @@ __pycache__/
 # C extensions
 *.so
 
+/models/
+
 # Distribution / packaging
 .Python
 env/
@@ -96,3 +98,6 @@ target/
 
 # Artifacts
 # /models/
+models/best_weights.json
+models/best_weights.json
+models/mapper.json
