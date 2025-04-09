@@ -201,7 +201,7 @@ make test
 ## 📚 Ressources utiles
 
 - [Evidently](https://github.com/evidentlyai/evidently)
-- [Flyte](https://docs.flyte.org/)
+- [Airflow](https://airflow.apache.org/)
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [MLflow](https://mlflow.org/)
 - [cookiecutter-data-science](https://drivendata.github.io/cookiecutter-data-science/)
