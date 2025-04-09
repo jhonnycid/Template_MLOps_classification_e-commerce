@@ -40,4 +40,4 @@ jobs:
       run: docker push jhonnycid/training_model:latest
 
     - name: Push Docker image
-      run: docker push jhonnycid/training_model:latest
+      run: docker push jhonnycid/data_processing=:latest
